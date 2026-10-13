@@ -73,7 +73,7 @@
   .ending-badge{display:inline-block;padding:7px 10px;background:#242c49;border:1px solid #3c486d;border-radius:999px;color:#cfd6e9;font-size:12px}
   .ending h2{font-size:30px;margin:12px 0 10px}
   .ending .lead{font-size:16px;line-height:1.75;color:#d5dbea}
-  .grades{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px}
+  .grades{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:20px}
   .grade{padding:16px;background:#111728;border:1px solid #303954;border-radius:14px}
   .grade b{font-size:12px;color:#919bb5}.grade strong{display:block;font-size:22px;margin-top:4px}
   .traits{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
@@ -103,11 +103,11 @@
     <div class="panel hero">
       <span class="ending-badge">Leadership Simulation</span>
       <h1>신임 팀장 90일</h1>
-      <p>당신은 오늘 처음 팀장이 되었습니다. 12주 동안 사람과 성과 사이에서 결정을 내리세요. 정답은 즉시 공개되지 않습니다. 좋은 의도도 팀을 망칠 수 있고, 불편한 선택이 오히려 필요한 순간도 있습니다.</p>
+      <p>당신은 오늘 처음 팀장이 되었습니다. 12주 동안 사람과 성과 사이에서 결정을 내리세요. 전체 50개의 사건 풀 중 한 번의 플레이에는 25~27개만 등장합니다. 정답은 즉시 공개되지 않습니다. 좋은 의도도 팀을 망칠 수 있고, 불편한 선택이 오히려 필요한 순간도 있습니다.</p>
       <div class="rules">
         <div class="rule"><b>선택은 현실적으로</b><span>대놓고 나쁜 답보다, 모두 그럴듯한 선택지 사이에서 판단합니다.</span></div>
         <div class="rule"><b>결과는 늦게 온다</b><span>오늘의 결정이 몇 주 뒤 팀원의 행동과 문화로 돌아올 수 있습니다.</span></div>
-        <div class="rule"><b>90일차 리포트</b><span>최종 엔딩에서 리더 유형, 결정 패턴, 잘한 점과 개선점을 분석합니다.</span></div>
+        <div class="rule"><b>90일차 리포트</b><span>최종 엔딩에서 사업 성과, 팀 지속가능성, 리더 유형과 주요 결정을 함께 분석합니다.</span></div>
       </div>
       <button class="primary" onclick="startGame()">팀장으로 출근하기</button>
     </div>
@@ -170,11 +170,13 @@ const team = {
   "지연": {role:"주니어 · 입사 2개월", note:"배우는 속도는 빠르지만 아직 자신감이 낮다."},
   "민수": {role:"3년차 · 실무형", note:"성실하지만 문제가 생겼을 때 혼자 끌어안는 편이다."},
   "성호": {role:"8년차 · 베테랑", note:"전문성이 높고 자기 방식이 분명하다."},
-  "수빈": {role:"4년차 · 협업형", note:"사람 사이의 분위기를 빠르게 읽는다."}
+  "수빈": {role:"4년차 · 협업형", note:"사람 사이의 분위기를 빠르게 읽는다."},
+  "준호": {role:"신입 · 고성과형", note:"업무 습득과 결과는 빠르지만 표현이 직설적이다."},
+  "소연": {role:"신입 · 노력형", note:"성실하고 피드백을 잘 받아들이지만 아직 결과가 불안정하다."}
 };
 
 let state = {
-  week:1, eventIndex:0, schedule:[], current:null, history:[], pending:[],
+  week:1, eventIndex:0, schedule:[], current:null, history:[], pending:[], followupCount:0,
   lastVisible:{performance:0,mood:0,fatigue:0}, finished:false
 };
 
@@ -187,7 +189,7 @@ E("w1_intro",1,"대표","첫날, 첫 메시지",
 
 “팀이 최근 꽤 바빴어요. 빨리 상황을 파악하고 이번 분기 결과를 만들어주세요.”
 
-오후에는 팀원 네 명과 첫 미팅이 잡혀 있습니다. 첫 회의를 어떻게 시작하시겠습니까?`,[
+오후에는 팀원들과 첫 미팅이 잡혀 있습니다. 첫 회의를 어떻게 시작하시겠습니까?`,[
  C("최근 프로젝트 현황과 각자 진행률부터 한 명씩 보고해달라고 한다.",
    "팀원들은 준비해 온 업무 현황을 차례로 설명했다. 무엇이 돌아가는지는 빠르게 파악됐다.",
    {performance:2,mood:-1,fatigue:1,clarity:2,control:1},{quality:0, topic:"첫 회의"}),
@@ -295,6 +297,26 @@ E("w6_delegate",6,"성호","중요 고객 제안서",
    "품질 이슈는 빠르게 잡혔다. 대신 두 사람 모두 제안서에 많은 시간을 쓰기 시작했다.",
    {performance:4,control:4,autonomy:-4,fatigue:4,overwork:2},{quality:-2, topic:"위임", follow:"senior_frustration"})
 ],{hint:"같은 사람도 과업마다 필요한 관리 강도가 다릅니다. 이번 과업에서 성호의 숙련도는 높습니다."}),
+
+E("w6_review",6,"대표","45일차 중간 성과 리뷰",
+`90일의 절반이 지났습니다. 대표가 당신을 따로 부릅니다.
+
+현재 성과 상태를 보고 대표가 말을 꺼냅니다.
+
+“팀 운영이 안정되는 것도 중요합니다. 하지만 결국 남은 6주 안에 결과를 보여줘야 합니다. 지금 방식으로 목표를 맞출 수 있습니까?”`,[
+ C("남은 6주는 내가 핵심 업무에 직접 더 들어가서 속도를 끌어올리겠다고 한다.",
+   "대표는 실행 의지는 확인했다. 당신의 캘린더에는 직접 챙겨야 할 핵심 업무가 몇 개 더 추가됐다.",
+   {performance:5,fatigue:5,control:2,rescue:2,overwork:3},{quality:-1, topic:"중간 성과 리뷰"}),
+ C("우선순위가 낮은 업무를 걷어내고 핵심 목표에 팀 역량을 집중하겠다고 한다.",
+   "대표와 핵심 목표 세 가지를 다시 확인했다. 몇몇 부가 업무는 뒤로 미뤄졌고 팀의 초점이 좁아졌다.",
+   {performance:4,clarity:4,process:2,mood:-1},{quality:2, topic:"중간 성과 리뷰"}),
+ C("팀이 성장하는 과정에서 필요한 시간이었으니 운영 방식은 유지하고 조금 더 지켜보겠다고 한다.",
+   "대표는 고개를 끄덕였지만 ‘다음 리뷰에서는 결과로 이야기하자’고 덧붙였다.",
+   {growth:2,trust:1},{quality:0, topic:"중간 성과 리뷰", dynamic:"hold_course"}),
+ C("현재 진행률·리스크·포기해야 할 범위를 정리해 공유하고, 지원이나 우선순위 조정을 요청한다.",
+   "대화가 추상적인 ‘열심히 하겠습니다’가 아니라 선택해야 할 문제로 바뀌었다. 대표는 필요한 지원과 우선순위를 함께 검토하기로 했다.",
+   {performance:2,clarity:4,direct:2,trust:2,process:2},{quality:2, topic:"중간 성과 리뷰"})
+],{hint:"팀장은 사람을 관리하는 자리이면서 동시에 결과를 책임지는 자리입니다. 성과 압박에 어떻게 대응하는지도 리더십의 일부입니다."}),
 
 E("w7_badnews",7,"지연","먼저 알려온 위험",
 `지연이 조심스럽게 찾아옵니다.
@@ -524,6 +546,193 @@ E("r_credit",0,"수빈","성과 발표",
  C("내 역할은 짧게 설명하고, 수빈과 민수가 어떤 판단으로 성과를 만들었는지 구체적으로 소개한다.","팀원들은 자신의 일이 조직에 보였다고 느꼈다.",{performance:2,mood:3,trust:3,growth:1},{quality:2,topic:"성과 인정"}),
  C("팀 전체의 성과라고만 말하고 개인 이름은 언급하지 않는다.","공은 공평하게 보였지만 누가 어떤 기여를 했는지는 남지 않았다.",{mood:1,trust:0,clarity:-1},{quality:0,topic:"성과 인정"}),
  C("수빈과 민수에게 아예 발표를 맡기고 나는 참석하지 않는다.","팀원에게 기회는 갔지만 필요한 조직 조율 역할까지 비었다.",{growth:2,autonomy:2,trust:0},{quality:0,topic:"성과 인정"})
+]),
+
+E("r_junho_attitude",0,"준호","잘하긴 하는데…",
+`준호는 입사 한 달 만에 업무를 빠르게 익혔고 결과도 좋습니다. 그런데 팀 분위기가 조금 이상합니다.
+
+민수가 원온원에서 말합니다.
+“준호 씨가 일은 정말 잘해요. 그런데 다른 사람이 설명하면 ‘그렇게 하면 느리지 않아요?’라고 자주 말해요.”
+
+오늘 회의에서도 준호가 선배의 제안을 듣고 말합니다.
+“그 방식은 너무 비효율적인데요. 제가 하면 훨씬 빨리 끝날 것 같습니다.”`,[
+ C("실력이 좋은 만큼 영향도 크다고 말하고, 오늘 회의에서 상대의 방식을 깎아내린 표현과 그 영향을 구체적으로 피드백한다.","준호는 잠시 당황했지만 ‘내용이 아니라 말하는 방식이 문제라는 거죠?’라고 확인했다.",{performance:1,direct:3,clarity:3,trust:1,safety:1},{quality:2,topic:"성과와 태도"}),
+ C("준호의 말이 틀린 것은 아니니 성과가 좋은 동안은 어느 정도 자신감으로 보고 지켜본다.","준호의 제안으로 일은 빨라졌다. 반면 회의에서 질문하는 사람은 눈에 띄게 줄었다.",{performance:4,mood:-3,safety:-4,trust:-2},{quality:-2,topic:"성과와 태도",follow:"junho_team_damage"}),
+ C("선배들이 불편해하니 당분간 회의에서는 말을 조금 자제해달라고 한다.","준호는 ‘그럼 의견이 있어도 말하지 않는 게 낫겠네요’라고 답했다.",{mood:1,safety:-2,growth:-2,direct:1},{quality:-1,topic:"성과와 태도",follow:"junho_silence"}),
+ C("준호가 답답하게 느낀 업무 방식부터 들어본 뒤, 좋은 제안과 사람을 무시하는 표현은 별개라고 선을 긋는다.","준호는 개선 아이디어를 구체적으로 설명했고, 당신은 그 내용 중 일부를 팀에 실험해보기로 했다.",{performance:2,coach:2,listening:2,direct:2,trust:2,safety:2},{quality:3,topic:"성과와 태도"})
+]),
+
+E("r_soyeon_results",0,"소연","노력은 보이는데",
+`소연은 누구보다 일찍 와서 메모하고, 받은 피드백도 빠짐없이 정리합니다. 태도에 대한 불만은 없습니다.
+
+하지만 입사 두 달이 지나도록 결과물의 완성도가 계속 기대에 못 미칩니다. 최근에는 성호가 소연의 작업을 거의 다시 만들다시피 했습니다.
+
+원온원에서 소연이 말합니다.
+“제가 부족한 건 알아요. 그래도 정말 열심히 하고 있습니다. 조금만 더 기회를 주시면 안 될까요?”`,[
+ C("노력하고 있는 건 충분히 아니 조금 더 시간을 두고 지켜보자고 한다.","소연은 안도했다. 다만 다음 달까지 무엇이 달라져야 하는지는 정하지 않았다.",{mood:2,trust:1,performance:-2,clarity:-3},{quality:-1,topic:"성과 부진 코칭",follow:"soyeon_burden"}),
+ C("노력은 인정하되 결과가 기준에 못 미친다는 점을 분리해서 말하고, 다음 3주 동안 도달해야 할 구체적인 기준을 함께 정한다.","소연은 표정이 무거워졌지만 기준을 하나씩 적었다. 다음 리뷰에서 무엇으로 판단할지는 분명해졌다.",{clarity:4,coach:3,trust:2,direct:2,performance:1},{quality:3,topic:"성과 부진 코칭",follow:"soyeon_checkpoint"}),
+ C("당분간 중요한 업무는 다른 사람에게 맡기고 쉬운 업무부터 다시 시작하게 한다.","팀의 당장 리스크는 줄었다. 소연은 맡는 업무가 눈에 띄게 단순해진 것을 알아차렸다.",{performance:3,growth:-3,mood:-2,control:1},{quality:0,topic:"성과 부진 코칭"}),
+ C("성호에게 당분간 소연의 결과물을 매번 리뷰해달라고 요청한다.","소연은 도움을 받을 수 있게 됐다. 성호의 일정에는 정기 리뷰 업무가 하나 더 생겼다.",{performance:2,growth:2,fatigue:2,mood:-1},{quality:0,topic:"성과 부진 코칭",follow:"soyeon_burden"})
+]),
+
+E("r_ace_gossip",0,"성호","에이스의 뒷담화",
+`성과가 가장 좋은 성호가 다른 팀원들과 점심을 먹다가 지연에 대해 말했다는 이야기를 들었습니다.
+
+“저 정도도 계속 알려줘야 하면 솔직히 같이 일하기 힘들죠.”
+
+지연은 아직 이 말을 들었는지 확실하지 않습니다.`,[
+ C("성호와 따로 이야기해 성과에 대한 우려는 들을 수 있지만 사람의 능력을 뒷자리에서 평가하는 방식은 멈춰달라고 한다.","성호는 처음엔 억울해했지만, 업무 문제와 동료 평가를 구분하자는 데는 동의했다.",{direct:3,safety:3,trust:2,mood:1},{quality:2,topic:"고성과자 관리"}),
+ C("성호 말에도 일리가 있으니 지연의 성과가 나아지는지 먼저 지켜본다.","당장의 충돌은 없었다. 대신 비슷한 이야기가 다른 자리에서도 한 번 더 나왔다.",{performance:1,mood:-2,safety:-3,avoid:2},{quality:-1,topic:"고성과자 관리"}),
+ C("팀 전체 회의에서 특정인을 뒤에서 평가하는 문화는 허용하지 않겠다고 강하게 공지한다.","메시지는 분명했다. 다만 성호는 자신의 이야기가 공개적으로 겨냥됐다고 느꼈다.",{direct:3,clarity:2,mood:-2,trust:-1,safety:1},{quality:0,topic:"고성과자 관리"}),
+ C("지연에게 먼저 혹시 불편한 일이 있었는지 묻고 본인이 문제를 제기하면 개입한다.","지연은 별말이 없다고 했다. 성호의 행동에는 아직 직접적인 피드백이 가지 않았다.",{listening:1,avoid:2,safety:-1},{quality:-1,topic:"고성과자 관리"})
+]),
+
+E("r_public_challenge",0,"성호","회의에서 공개 반박",
+`회의에서 당신이 새로운 일정 운영 방식을 설명하자 성호가 바로 말합니다.
+
+“그 방식은 실제로 해보면 안 될 겁니다. 지난번에도 비슷하게 했다가 실패했잖아요.”
+
+모두가 당신을 바라봅니다.`,[
+ C("팀장 결정은 일단 따라야 한다고 선을 긋고, 자세한 의견은 회의 후 따로 듣는다.","회의는 계획대로 진행됐다. 성호는 이후 발언을 줄였다.",{clarity:2,control:2,safety:-3,mood:-1},{quality:-1,topic:"공개 반박"}),
+ C("어떤 부분이 실패할 것 같은지 지금 근거를 들어보자고 한다.","성호가 과거 사례를 설명했고, 원안에서 놓친 리스크 하나가 발견됐다.",{performance:2,safety:4,trust:2,listening:2},{quality:2,topic:"공개 반박"}),
+ C("회의 흐름이 깨지니 지금은 보류하고, 둘이 합의한 뒤 다시 공지하겠다고 한다.","갈등은 커지지 않았지만 다른 팀원들은 무엇이 결정된 건지 기다리게 됐다.",{mood:1,performance:-2,clarity:-2,avoid:1},{quality:0,topic:"공개 반박"}),
+ C("성호 말이 맞을 수도 있으니 바로 성호 방식으로 바꾼다.","논쟁은 끝났지만 의사결정 과정이 근거보다 목소리 큰 사람에게 움직인다는 인상이 남았다.",{performance:1,trust:-1,clarity:-1,control:-1},{quality:-1,topic:"공개 반박"})
+]),
+
+E("r_silent_conflict",0,"수빈","둘이 서로 말을 안 한다",
+`수빈과 민수가 지난 협업 충돌 이후 필요한 대화까지 메신저로만 하고 서로 자리를 피하고 있습니다.
+
+업무 인수인계 하나가 늦어지면서 일정에도 영향이 생기기 시작했습니다.`,[
+ C("프로라면 감정과 업무는 구분해야 한다고 말하고 둘이 알아서 해결하게 한다.","두 사람은 필요한 메시지는 보냈지만 관계는 더 굳었다.",{performance:-2,mood:-2,safety:-1},{quality:-1,topic:"갈등 중재"}),
+ C("두 사람을 각각 따로 만나 사실과 불편한 점을 들은 뒤, 해결해야 할 업무 쟁점을 셋이 함께 정리한다.","서로 다르게 기억하던 부분이 드러났고, 적어도 업무에서 지킬 기준은 합의됐다.",{performance:1,mood:2,safety:3,trust:2,coach:2},{quality:3,topic:"갈등 중재"}),
+ C("업무가 급하니 한동안 둘의 협업이 생기지 않도록 담당을 분리한다.","당장의 마찰은 줄었다. 대신 업무 배분이 비효율적으로 바뀌었다.",{performance:-1,mood:2,avoid:2,clarity:1},{quality:0,topic:"갈등 중재"}),
+ C("팀 분위기를 위해 둘이 서로 사과하고 끝내도록 한다.","사과는 했지만 무엇을 사과한 것인지 둘 다 납득하지 못한 듯했다.",{mood:-1,safety:-2,direct:1},{quality:-1,topic:"갈등 중재"})
+]),
+
+E("r_credit_steal",0,"민수","누구의 성과인가",
+`대표가 참석한 성과 공유에서 민수가 자신이 맡은 기능을 성공 사례로 소개했습니다.
+
+그런데 핵심 해결책과 대부분의 실행은 수빈이 만든 것이었습니다. 수빈은 아무 말 없이 발표를 듣고 있습니다.`,[
+ C("발표 자리에서 바로 수빈의 기여를 구체적으로 보충한다.","수빈의 역할은 분명해졌다. 민수는 순간 당황했지만 발표는 이어졌다.",{mood:1,trust:2,direct:2,clarity:2},{quality:2,topic:"공정성"}),
+ C("발표 후 민수와 따로 이야기하고 다음 공유부터 정확히 나누라고 한다.","민수는 인정했다. 다만 이번 발표 기록에는 이미 민수 중심으로 남았다.",{trust:1,direct:2,mood:-1},{quality:1,topic:"공정성"}),
+ C("팀 성과는 어차피 공동 성과이니 굳이 문제 삼지 않는다.","발표는 매끄럽게 끝났다. 수빈은 이후 자신의 작업을 더 자세히 기록하기 시작했다.",{performance:1,trust:-3,mood:-2,avoid:2},{quality:-2,topic:"공정성"}),
+ C("수빈에게 왜 직접 자기 기여를 말하지 않았는지 묻는다.","수빈은 ‘제가 말하면 공을 뺏는 사람처럼 보일까 봐요’라고 답했다.",{listening:2,trust:0,safety:1},{quality:0,topic:"공정성"})
+]),
+
+E("r_promotion",0,"성호","승진에서 떨어진 사람",
+`성호가 이번 승진 대상에서 빠졌습니다. 결과를 확인한 뒤 성호가 원온원에서 묻습니다.
+
+“제가 여기서 더 잘하면 정말 다음 단계가 있긴 한가요?”
+
+당신도 다음 승진을 약속할 권한은 없습니다.`,[
+ C("지금까지 성과면 다음에는 충분히 될 거라고 자신 있게 말해준다.","성호는 잠시 안도했다. 하지만 당신이 보장할 수 없는 약속이 하나 생겼다.",{mood:2,trust:1,clarity:-3},{quality:-1,topic:"승진/커리어"}),
+ C("실망한 감정을 먼저 듣고, 내가 약속할 수 있는 것과 없는 것을 구분한 뒤 다음 단계에 필요한 기준을 함께 확인한다.","성호는 여전히 아쉬워했지만 적어도 다음 행동과 불확실한 부분은 분리해서 받아들였다.",{trust:3,clarity:3,listening:3,coach:2},{quality:3,topic:"승진/커리어"}),
+ C("회사 결정이라 내가 바꿀 수 없다고 설명하고 업무에 집중하자고 한다.","대화는 빨리 끝났다. 성호는 그 뒤 커리어 이야기를 꺼내지 않았다.",{mood:-3,trust:-3,safety:-2},{quality:-2,topic:"승진/커리어"}),
+ C("불공정해 보인다고 공감하고 나도 위에 강하게 문제 제기하겠다고 한다.","성호는 고마워했지만 사실관계를 확인하기 전에 당신도 한쪽 입장에 서게 됐다.",{mood:2,trust:1,direct:1,clarity:-1},{quality:0,topic:"승진/커리어"})
+]),
+
+E("r_tears",0,"지연","피드백 도중의 눈물",
+`지연에게 반복된 보고 누락을 이야기하던 중 지연의 눈에 눈물이 맺힙니다.
+
+“죄송합니다. 요즘 제가 계속 실수하는 것 같아서…”
+
+아직 전달해야 할 중요한 피드백이 남아 있습니다.`,[
+ C("오늘은 여기까지 하고 피드백은 없던 일로 한다.","지연은 진정했지만 무엇을 바꿔야 하는지는 명확해지지 않았다.",{mood:2,clarity:-3,avoid:3},{quality:-1,topic:"감정적 피드백"}),
+ C("잠시 쉬었다가 괜찮은지 확인한 뒤, 감정과 별개로 필요한 행동 피드백은 구체적으로 마무리한다.","지연은 시간을 갖고 다시 들어왔다. 대화는 느렸지만 다음 행동까지 정리됐다.",{trust:2,direct:2,clarity:3,safety:2},{quality:3,topic:"감정적 피드백"}),
+ C("업무 피드백 자리니 감정과 관계없이 끝까지 바로 이야기한다.","필요한 내용은 모두 전달됐다. 지연은 이후 질문을 거의 하지 않았다.",{direct:3,clarity:2,safety:-4,trust:-2},{quality:-1,topic:"감정적 피드백"}),
+ C("왜 힘든지 개인적인 사정까지 자세히 물어본다.","지연은 ‘그건 개인적인 일이라…’라며 말을 줄였다.",{trust:-1,safety:-1,listening:1},{quality:0,topic:"감정적 피드백"})
+]),
+
+E("r_quit",0,"수빈","“다른 회사도 보고 있어요”",
+`수빈이 원온원 끝에 조심스럽게 말합니다.
+
+“아직 결정한 건 아니지만 요즘 다른 회사도 알아보고 있어요. 팀이 싫어서라기보다는 제 커리어를 생각하다 보니…”`,[
+ C("핵심 인력이니 조건을 맞출 수 있는지 바로 알아보겠다고 한다.","수빈은 고마워했지만 아직 무엇이 이직 고민의 핵심인지 말하지 않았다.",{trust:1,mood:1,performance:1},{quality:0,topic:"퇴사 고민"}),
+ C("붙잡기 전에 무엇을 기대하고 있고 지금 역할에서 무엇이 부족한지 먼저 듣는다.","수빈은 연봉보다 역할 확장과 성장 정체가 더 큰 이유라고 털어놓았다.",{trust:3,listening:4,coach:2,safety:2},{quality:3,topic:"퇴사 고민"}),
+ C("이직 의사가 있다는 사실을 바로 상사와 인사팀에 공유한다.","조직은 리스크를 일찍 알게 됐다. 수빈은 자신이 아직 고민 중이라고 했던 이야기가 빠르게 퍼진 것을 알게 됐다.",{clarity:2,trust:-4,safety:-3},{quality:-2,topic:"퇴사 고민"}),
+ C("결국 개인 선택이니 결정되면 알려달라고 한다.","압박은 주지 않았지만 수빈의 고민을 이해할 기회도 지나갔다.",{mood:0,trust:-1,avoid:2},{quality:-1,topic:"퇴사 고민"})
+]),
+
+E("r_personal_slump",0,"민수","평소와 다른 민수",
+`평소 안정적이던 민수의 실수가 최근 두 주 사이 눈에 띄게 늘었습니다.
+
+원온원에서 이유를 묻자 민수는 “개인적으로 좀 일이 있습니다. 자세한 얘기는 하고 싶지 않습니다”라고 답합니다.`,[
+ C("업무에 영향을 주는 만큼 무슨 일인지 자세히 알아야 한다고 묻는다.","민수는 필요한 내용만 말하겠다며 대화를 닫았다.",{trust:-2,safety:-2,direct:1},{quality:-1,topic:"사생활 경계"}),
+ C("자세한 설명은 요구하지 않고, 당분간 업무량이나 마감에서 조정이 필요한 부분이 있는지만 묻는다.","민수는 한 가지 마감만 일주일 조정해달라고 요청했다.",{trust:3,safety:3,mood:2,performance:-1},{quality:3,topic:"사생활 경계"}),
+ C("개인 문제는 개인 문제이니 기존 업무 기준은 그대로 유지한다고 한다.","기준은 공평하게 유지됐다. 민수의 실수도 한동안 계속됐다.",{clarity:2,mood:-2,trust:-2,performance:-2},{quality:-1,topic:"사생활 경계"}),
+ C("당분간 민수의 업무를 다른 팀원들에게 나눠주고 이유는 설명하지 않는다.","민수의 부담은 줄었지만 다른 팀원들은 갑자기 늘어난 업무 이유를 궁금해했다.",{mood:-1,performance:1,trust:0,fatigue:2},{quality:0,topic:"사생활 경계"})
+]),
+
+E("r_leader_wrong",0,"당신","내가 틀렸다",
+`아침 회의에서 당신은 성호가 일정 데이터를 잘못 봤다고 공개적으로 지적했습니다.
+
+한 시간 뒤 확인해보니 성호가 맞았고 당신이 이전 버전 자료를 보고 있었습니다. 회의에는 팀원 전원이 있었습니다.`,[
+ C("성호에게 개인적으로 가서 오해했다고 사과한다.","성호는 받아들였다. 다만 다른 팀원들에게는 아침 지적만 남아 있다.",{trust:1,mood:1},{quality:1,topic:"팀장 실수"}),
+ C("다음 팀 공유에서 내가 자료를 잘못 봤다고 공개적으로 바로잡고 성호에게 사과한다.","성호의 판단이 공식적으로 정정됐고 팀원들은 팀장도 잘못을 인정하는 장면을 봤다.",{trust:4,safety:4,direct:2},{quality:3,topic:"팀장 실수"}),
+ C("오해할 만한 자료 구조였으니 굳이 다시 꺼내지 않는다.","일은 계속 진행됐다. 성호는 이후 중요한 이견을 말하기 전 자료를 과도하게 준비하기 시작했다.",{safety:-3,trust:-3,avoid:2},{quality:-2,topic:"팀장 실수"}),
+ C("성호도 그 자리에서 더 분명하게 설명했어야 했다고 말하며 서로의 실수로 정리한다.","사과는 있었지만 책임이 다시 나뉘었다. 성호의 표정은 굳었다.",{trust:-2,safety:-2,direct:1},{quality:-1,topic:"팀장 실수"})
+]),
+
+E("r_favoritism",0,"지연","“민수님 말은 바로 들으시잖아요”",
+`지연이 원온원에서 조심스럽게 말합니다.
+
+“제가 의견 내면 조금 더 설명해야 하는데, 민수님이 말하면 팀장님이 바로 받아들이시는 느낌이 있어요. 제가 예민한 걸 수도 있지만요.”`,[
+ C("그럴 의도는 없었고 실제로는 의견의 완성도 차이라고 설명한다.","지연은 이해한다고 했지만 자신의 느낌이 틀렸다는 결론처럼 들린 듯했다.",{trust:-1,safety:-2,direct:1},{quality:-1,topic:"공정성"}),
+ C("그렇게 느낀 구체적인 장면을 물어보고 내 의사결정 패턴에 실제 차이가 있었는지 확인하겠다고 한다.","지연은 두 가지 사례를 들었다. 하나는 당신도 바로 떠올릴 수 있는 장면이었다.",{listening:3,trust:3,safety:3,clarity:1},{quality:3,topic:"공정성"}),
+ C("앞으로는 지연 의견을 의식적으로 더 자주 받아들이겠다고 약속한다.","지연은 고마워했지만 의사결정 기준이 또 다른 방향으로 흔들릴 가능성이 생겼다.",{mood:2,clarity:-2,trust:1},{quality:0,topic:"공정성"}),
+ C("팀 전체에게 누구 의견이든 동일하게 검토한다고 공지한다.","원칙은 공유됐지만 지연이 꺼낸 구체적인 경험은 다뤄지지 않았다.",{clarity:2,trust:0,safety:0},{quality:0,topic:"공정성"})
+]),
+
+E("r_joke",0,"수빈","분위기 메이커의 농담",
+`수빈은 팀 분위기를 잘 띄우는 사람입니다. 그런데 최근 준호의 실수를 두고 “천재 신입도 이런 건 틀리네?” 같은 농담을 반복합니다.
+
+대부분 웃지만 준호는 웃지 않습니다.`,[
+ C("다들 웃는 정도라면 큰 문제는 아니니 지켜본다.","분위기는 겉으로 유지됐다. 준호는 수빈과 대화할 때 필요한 말만 하기 시작했다.",{mood:1,safety:-3,trust:-1},{quality:-1,topic:"팀 문화"}),
+ C("수빈과 따로 이야기해 의도와 별개로 특정 사람의 실수를 반복해서 소재로 삼는 행동을 멈춰달라고 한다.","수빈은 처음엔 놀랐지만 준호가 불편할 수 있다는 점은 인정했다.",{direct:3,safety:3,trust:2,mood:0},{quality:3,topic:"팀 문화"}),
+ C("다음번 같은 농담이 나오면 그 자리에서 바로 ‘그만하죠’라고 끊는다.","농담은 바로 멈췄다. 수빈은 이후 개인적으로 왜 문제였는지 물어왔다.",{direct:3,safety:2,mood:-1},{quality:2,topic:"팀 문화"}),
+ C("준호에게 먼저 농담이 불편한지 확인하고 불편하다고 하면 조치한다.","준호는 ‘괜찮습니다’라고 답했지만 표정은 편하지 않았다.",{listening:1,safety:0,avoid:1},{quality:0,topic:"팀 문화"})
+]),
+
+E("r_quiet_high",0,"민수","조용한 고성과자",
+`민수는 최근 맡은 업무를 안정적으로 끝내고 있습니다. 하지만 회의에서는 거의 말하지 않고 팀 행사나 잡담에도 잘 참여하지 않습니다.
+
+수빈은 “민수님이 팀에 마음이 없는 것 같다”고 걱정합니다.`,[
+ C("성과에 문제 없으면 굳이 성격까지 바꿀 필요는 없다고 본다.","민수는 기존 방식대로 일했다. 업무 성과에도 변화는 없었다.",{performance:2,trust:1},{quality:2,topic:"개인차 관리"}),
+ C("팀워크를 위해 회의에서 최소 한 번은 의견을 내고 팀 행사에도 가능하면 참석해달라고 한다.","참여는 조금 늘었지만 민수는 눈에 띄게 피곤해했다.",{mood:1,trust:-1,fatigue:1},{quality:-1,topic:"개인차 관리"}),
+ C("민수와 따로 만나 지금 방식에서 협업상 불편한 점이 있는지만 확인한다.","민수는 혼자 집중하는 시간이 필요할 뿐 협업 자체에는 문제가 없다고 설명했다.",{listening:3,trust:2,safety:2},{quality:3,topic:"개인차 관리"}),
+ C("수빈에게 민수를 좀 더 챙겨달라고 부탁한다.","수빈은 노력했지만 민수는 갑자기 관심이 늘어난 이유를 궁금해했다.",{mood:1,trust:-1},{quality:0,topic:"개인차 관리"})
+]),
+
+E("r_covering",0,"성호","두 사람 몫을 하는 사람",
+`최근 성호가 다른 팀원의 미완성 작업을 조용히 고쳐서 마감에 맞추는 일이 반복되고 있다는 걸 알게 됐습니다.
+
+덕분에 팀 성과는 유지되고 있지만 성호의 퇴근 시간이 점점 늦어지고 있습니다.`,[
+ C("성과를 지켜줘서 고맙다고 하고 이번 분기까지만 조금 더 부탁한다.","마감은 계속 지켜졌다. 성호의 야근도 계속됐다.",{performance:4,mood:-2,fatigue:3,overwork:3},{quality:-2,topic:"숨은 과부하"}),
+ C("누구의 어떤 일을 대신 메우고 있는지 확인하고 원래 담당자의 개선 계획과 성호의 업무 경계를 각각 정한다.","숨겨져 있던 재작업량이 드러났다. 단기 속도는 조금 느려졌지만 책임 소재가 분명해졌다.",{performance:-1,clarity:4,trust:3,process:3},{quality:3,topic:"숨은 과부하"}),
+ C("성호에게 앞으로 다른 사람 일을 고치지 말고 그대로 올리라고 한다.","성호의 부담은 줄었지만 몇 개 결과물의 품질 문제가 바로 드러났다.",{fatigue:-2,performance:-2,clarity:1},{quality:0,topic:"숨은 과부하"}),
+ C("성과가 낮은 팀원들을 공개적으로 불러 성호가 대신 메운 일을 알려준다.","문제 규모는 모두 알게 됐지만 몇몇 팀원은 공개적으로 비교당했다고 느꼈다.",{clarity:2,safety:-4,mood:-3,direct:2},{quality:-1,topic:"숨은 과부하"})
+]),
+
+E("r_private_request",0,"소연","조용한 일정 조정 요청",
+`소연이 개인적으로 찾아와 다음 한 달 동안 주 2회 정도 출근 시간을 늦출 수 있는지 묻습니다.
+
+“개인적인 사정인데 자세한 이야기는 하고 싶지 않습니다. 업무 시간은 다른 날 보완하겠습니다.”
+
+팀에는 아직 비슷한 사례가 없습니다.`,[
+ C("개인 사정의 내용부터 알아야 형평성을 판단할 수 있다고 한다.","소연은 요청을 철회할까 고민하는 듯했다.",{trust:-2,safety:-2},{quality:-1,topic:"공정성과 사생활"}),
+ C("업무에 필요한 공통 기준과 가능한 범위를 확인한 뒤, 개인 사정의 세부 내용 없이 같은 기준으로 판단한다.","소연은 필요한 정보만 공유했고 팀에도 적용 가능한 운영 기준이 하나 생겼다.",{trust:3,clarity:3,safety:2,process:2},{quality:3,topic:"공정성과 사생활"}),
+ C("열심히 하는 직원이니 이번에는 예외로 허용하고 팀에는 따로 설명하지 않는다.","소연은 고마워했다. 몇 주 뒤 다른 팀원이 출근 기준을 묻기 시작했다.",{mood:2,trust:1,clarity:-3},{quality:0,topic:"공정성과 사생활"}),
+ C("전례가 없으니 모든 팀원에게 동일하게 적용하려면 허용하기 어렵다고 한다.","운영은 단순하게 유지됐다. 소연은 더 이상 개인적인 필요를 이야기하지 않았다.",{clarity:2,trust:-2,mood:-1},{quality:-1,topic:"공정성과 사생활"})
+]),
+
+E("r_lunch_clique",0,"지연","점심자리에서 결정되는 것들",
+`최근 중요한 실무 정보 몇 가지가 정식 회의가 아니라 성호·민수·수빈이 자주 함께 먹는 점심자리에서 먼저 공유되고 있다는 걸 알게 됐습니다.
+
+지연과 신입들은 그 자리에 자주 끼지 않습니다.`,[
+ C("친한 사람끼리 밥 먹는 것까지 관리할 필요는 없다고 본다.","점심 문화는 그대로 유지됐다. 공식 채널에 올라오는 정보는 여전히 조금 늦었다.",{mood:1,clarity:-2,safety:-1},{quality:-1,topic:"포용과 정보"}),
+ C("누구와 밥을 먹는지는 건드리지 않되, 업무 결정과 주요 정보는 반드시 공식 채널에 남기도록 기준을 만든다.","친분은 그대로였지만 업무 정보가 특정 관계를 통해서만 흐르는 일은 줄었다.",{clarity:4,safety:3,trust:2,process:3},{quality:3,topic:"포용과 정보"}),
+ C("팀워크를 위해 앞으로 주 2회는 전원 점심을 함께 먹자고 한다.","정보 격차는 조금 줄었지만 점심시간을 개인 시간으로 쓰던 팀원들의 불만이 생겼다.",{mood:-2,clarity:2,control:2},{quality:-1,topic:"포용과 정보"}),
+ C("지연과 신입들에게 먼저 기존 멤버들과 더 적극적으로 어울려보라고 조언한다.","신입들은 노력했지만 정보 접근 문제의 책임이 자신들에게 있는 것처럼 느꼈다.",{mood:-1,trust:-2,safety:-1},{quality:-2,topic:"포용과 정보"})
 ])
 ];
 
@@ -551,6 +760,38 @@ const followups = {
  C("지연에게 고맙다고 말하고 팀에 ‘확실하지 않아도 위험 신호는 빨리 공유하자’는 원칙을 재확인한다.","팀원들이 비슷한 위험 신호를 이야기하는 빈도가 조금씩 늘기 시작했다.",{safety:4,trust:3,clarity:2},{quality:2,topic:"후속: 심리적 안전감"}),
  C("잘 발견했으니 앞으로 이런 검토는 지연이 전담하게 한다.","지연은 인정받았지만 새로운 책임도 바로 늘었다.",{growth:2,mood:1,autonomy:1},{quality:0,topic:"후속: 심리적 안전감"}),
  C("결과적으로 맞았지만 매번 반나절을 쓸 수는 없으니 다음엔 더 확실한 근거를 가져오게 한다.","팀은 리스크 공유 기준을 다시 높게 잡기 시작했다.",{safety:-2,clarity:1},{quality:-1,topic:"후속: 심리적 안전감"})
+  ]),
+  junho_team_damage: E("f_junho_damage",0,"지연","질문이 사라진 이유",
+`최근 회의에서 지연과 소연이 거의 질문하지 않습니다. 따로 물어보니 지연이 말합니다.
+
+“모르는 걸 물어보면 준호 씨가 너무 쉬운 것도 모른다는 식으로 받아칠 때가 있어서요. 그냥 제가 알아보는 게 편해요.”`,[
+ C("준호의 성과와 별개로 질문을 위축시키는 행동은 팀 성과를 해친다고 구체적인 사례와 함께 피드백한다.","준호는 처음엔 ‘사실을 말했을 뿐’이라고 했지만 팀 전체의 정보 흐름에 미친 영향까지 들은 뒤 표현을 바꿔보겠다고 했다.",{performance:1,direct:3,safety:4,trust:2},{quality:3,topic:"성과와 태도"}),
+ C("준호에게 너무 직설적으로 말하지 말라고 짧게 경고한다.","준호는 알겠다고 했지만 무엇을 어떻게 바꿔야 하는지는 분명하지 않았다.",{direct:2,safety:1,clarity:-1},{quality:0,topic:"성과와 태도"}),
+ C("신입들이 적응하면 괜찮아질 문제라고 보고 조금 더 지켜본다.","질문은 계속 줄었고 준호에게 직접 검토받지 않은 작은 실수가 뒤늦게 발견됐다.",{performance:-2,safety:-3,avoid:2},{quality:-2,topic:"성과와 태도"})
+  ]),
+  junho_silence: E("f_junho_silence",0,"준호","말하지 않는 준호",
+`최근 준호가 회의에서 거의 말을 하지 않습니다. 회의가 끝난 뒤 따로 물어보자 말합니다.
+
+“괜히 또 건방지다고 들을 바에는 그냥 시키는 것만 하는 게 낫죠.”`,[
+ C("지난 피드백의 의도가 의견 자체를 막는 것이 아니었다고 인정하고, 의견은 환영하되 사람을 평가하지 않는 표현 기준을 다시 합의한다.","준호는 다음 회의에서 개선 아이디어 하나를 조심스럽게 제안했다.",{trust:3,safety:3,direct:2,clarity:3},{quality:3,topic:"성과와 태도"}),
+ C("조직에서는 말투도 실력의 일부니 본인이 적응해야 한다고 한다.","준호는 더 이상 불만을 말하지 않았다. 의견도 거의 내지 않았다.",{clarity:1,safety:-3,trust:-2},{quality:-1,topic:"성과와 태도"}),
+ C("아직 신입이니 일단 맡은 일에 집중하는 것도 나쁘지 않다고 한다.","업무 결과는 유지됐지만 준호의 개선 제안은 팀에서 사라졌다.",{performance:1,growth:-2,safety:-2},{quality:-1,topic:"성과와 태도"})
+  ]),
+  soyeon_checkpoint: E("f_soyeon_checkpoint",0,"소연","3주 뒤의 리뷰",
+`소연과 합의한 3주가 지났습니다. 속도는 아직 느리지만 오류는 눈에 띄게 줄었습니다. 정한 기준 중 세 가지는 충족했고 하나는 아직 부족합니다.
+
+소연이 묻습니다. “이 정도면 제가 나아지고 있는 건가요?”`,[
+ C("개선된 부분과 아직 부족한 기준을 각각 구체적으로 확인하고, 다음 단계에서 맡길 업무 범위를 조금 넓힌다.","소연은 무엇이 좋아졌고 무엇을 더 해야 하는지 명확히 알고 돌아갔다.",{performance:2,growth:4,trust:3,coach:2},{quality:3,topic:"성과 부진 코칭"}),
+ C("열심히 했으니 이제 충분히 잘하고 있다고 격려하고 기준 검토는 여기서 끝낸다.","소연은 자신감을 얻었다. 아직 남은 약점은 다음 업무에서 다시 드러날 가능성이 남았다.",{mood:3,clarity:-2,growth:1},{quality:0,topic:"성과 부진 코칭"}),
+ C("아직 한 항목이 부족하니 중요한 업무는 계속 맡기지 않는다.","리스크는 낮았지만 소연은 개선이 실제 기회로 이어지는지 의문을 가지기 시작했다.",{performance:1,growth:-2,mood:-2,trust:-1},{quality:-1,topic:"성과 부진 코칭"})
+  ]),
+  soyeon_burden: E("f_soyeon_burden",0,"성호","“제가 두 사람 몫을 하고 있습니다”",
+`성호가 원온원에서 말합니다.
+
+“소연 씨가 열심히 하는 건 알아요. 그런데 결과물을 계속 제가 다시 손보고 있습니다. 솔직히 지금은 제가 두 사람 몫을 하는 것 같습니다.”`,[
+ C("소연이 적응할 때까지만 조금 더 이해해달라고 부탁한다.","성호는 알겠다고 했지만 야근은 줄지 않았다.",{performance:2,mood:-2,trust:-2,overwork:2},{quality:-2,topic:"성과 부진 코칭"}),
+ C("성호가 실제로 대신하고 있는 작업량을 확인하고, 소연에게 필요한 기준과 지원 시간을 공식적으로 다시 설계한다.","보이지 않던 재작업 시간이 드러났고 소연의 교육 비용도 팀 계획에 포함됐다.",{performance:-1,clarity:4,trust:3,process:3,coach:2},{quality:3,topic:"성과 부진 코칭"}),
+ C("팀 성과가 중요하니 당분간 소연 업무를 성호에게 넘긴다.","단기 결과는 안정됐다. 소연의 역할은 크게 줄었고 성호에게 더 많은 핵심 일이 모였다.",{performance:4,growth:-4,fatigue:3,overwork:2},{quality:-1,topic:"성과 부진 코칭"})
   ])
 };
 
@@ -572,32 +813,21 @@ function chooseSchedule(){
   const byWeek = {};
   fixedEvents.forEach(e => (byWeek[e.week] ||= []).push(e));
   const pool = [...randomEvents];
-  // Fisher-Yates
+  // 전체 랜덤 풀 중 매 플레이 12개만 사용한다.
   for(let i=pool.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]]; }
   const sched=[];
   for(let w=1;w<=MAX_WEEKS;w++){
-    // fixed main event
     (byWeek[w]||[]).forEach(e=>sched.push(clone(e)));
-    // one random event each week, extra random event on 4 random weeks
     if(pool.length) sched.push({...clone(pool.shift()),week:w});
   }
-  const extraWeeks=[2,4,7,10].sort(()=>Math.random()-.5);
-  extraWeeks.forEach(w=>{
-    if(pool.length){
-      // insert extra after the week's first event(s)
-      const evt={...clone(pool.shift()),week:w};
-      let idx=sched.map(x=>x.week).lastIndexOf(w);
-      sched.splice(idx+1,0,evt);
-    }
-  });
-  // sort by week while keeping within-week order
+  // 고정 13개 + 랜덤 12개 = 기본 25개. 후속 사건은 별도로 최대 2개만 추가된다.
   sched.sort((a,b)=>a.week-b.week);
   return sched;
 }
 function resetAll(){
   Object.assign(publicState,{performance:55,mood:55,fatigue:28});
   Object.assign(hidden,{safety:50,autonomy:50,trust:50,growth:50,clarity:50,coach:0,delegate:0,control:0,rescue:0,avoid:0,direct:0,listening:0,process:0,overwork:0});
-  state={week:1,eventIndex:0,schedule:chooseSchedule(),current:null,history:[],pending:[],lastVisible:{performance:0,mood:0,fatigue:0},finished:false};
+  state={week:1,eventIndex:0,schedule:chooseSchedule(),current:null,history:[],pending:[],followupCount:0,lastVisible:{performance:0,mood:0,fatigue:0},finished:false};
 }
 function startGame(){
   resetAll();
@@ -622,13 +852,72 @@ function weekEventNumber(){
   const upto=state.schedule.slice(0,state.eventIndex+1).filter(e=>e.week===state.current.week).length;
   return upto;
 }
+function performanceBand(v=publicState.performance){
+  if(v>=80) return {name:"목표 초과", cls:"excellent"};
+  if(v>=68) return {name:"목표 달성권", cls:"good"};
+  if(v>=55) return {name:"달성 가능", cls:"steady"};
+  if(v>=45) return {name:"주의", cls:"warn"};
+  return {name:"목표 미달 위험", cls:"danger"};
+}
+function midReviewBody(){
+  const p=publicState.performance;
+  if(p>=75) return `90일의 절반이 지났습니다. 대표가 당신을 따로 부릅니다.
+
+“현재 핵심 목표는 계획보다 앞서 있습니다. 결과는 좋습니다.”
+
+대표가 잠시 자료를 보더니 덧붙입니다.
+
+“그런데 이 속도가 팀이 잘 움직여서 나온 건지, 팀장님이 직접 메우고 있어서 나온 건지는 확인하고 싶습니다. 남은 6주도 지속할 수 있습니까?”`;
+  if(p>=58) return `90일의 절반이 지났습니다. 대표가 당신을 따로 부릅니다.
+
+“현재 성과는 계획선 근처입니다. 목표 달성은 가능해 보이지만 여유가 많지는 않습니다.”
+
+“팀 운영이 안정되는 것도 중요합니다. 하지만 결국 남은 6주 안에 결과를 보여줘야 합니다. 지금 방식으로 목표를 맞출 수 있습니까?”`;
+  if(p>=45) return `90일의 절반이 지났습니다. 대표가 당신을 따로 부릅니다.
+
+“현재 진행 상태는 주의 구간입니다. 팀 분위기가 좋아졌다는 이야기는 들었지만, 목표 달성 가능성은 아직 불안합니다.”
+
+“남은 6주 동안 무엇을 바꿀 건가요? 사람을 키우는 것과 결과를 내는 것 둘 다 팀장 책임입니다.”`;
+  return `90일의 절반이 지났습니다. 대표가 당신을 따로 부릅니다.
+
+“현재 속도라면 이번 목표는 놓칠 가능성이 큽니다.”
+
+“과정이 중요하다는 건 압니다. 하지만 이 팀이 존재하는 이유는 결과를 만들기 위해서이기도 합니다. 남은 6주 동안 어떻게 회복할 겁니까?”`;
+}
+function eventBody(e){
+  if(e.id==="w6_review") return midReviewBody();
+  if(e.id==="w9_exec" && publicState.performance>=75){
+    return `대표가 오후 4시에 메시지를 보냈습니다.
+
+“요즘 팀 성과가 좋다면서요. 내일 중요한 미팅이 생겼는데 경쟁사 비교 자료 20페이지 정도도 가능할까요?”
+
+잘하고 있다는 이유로 새로운 일이 추가됐습니다. 팀은 이미 이번 주 마감 업무로 꽉 차 있습니다.`;
+  }
+  if(e.id==="w9_exec" && publicState.performance<48){
+    return `대표가 오후 4시에 메시지를 보냈습니다.
+
+“현재 목표 회복이 필요한 건 알고 있습니다. 그런데 내일 중요한 미팅이 생겼어요. 경쟁사 비교 자료 20페이지 정도 가능할까요?”
+
+성과를 회복해야 하는 상황에서 새로운 긴급 요청까지 들어왔습니다. 팀은 이미 이번 주 마감 업무로 꽉 차 있습니다.`;
+  }
+  return e.body;
+}
+function choiceEffects(e,c){
+  const out={...(c.effects||{})};
+  if(e.id==="w6_review" && c.meta?.dynamic==="hold_course"){
+    if(publicState.performance>=72) out.performance=(out.performance||0)+1;
+    else if(publicState.performance<55) out.performance=(out.performance||0)-3;
+  }
+  return out;
+}
+
 function showEvent(){
   if(state.eventIndex>=state.schedule.length){ finishGame(); return; }
   const e=state.schedule[state.eventIndex]; state.current=e; state.week=e.week;
   document.getElementById("reaction").classList.remove("show");
   document.getElementById("kicker").textContent=`Week ${e.week} · 사건 ${weekEventNumber()}`;
   document.getElementById("title").textContent=e.title;
-  document.getElementById("body").textContent=e.body;
+  document.getElementById("body").textContent=eventBody(e);
   document.getElementById("avatar").textContent=e.who==="대표"?"CEO":e.who==="당신"?"ME":e.who==="팀"?"TEAM":e.who.slice(0,1);
   const hint=document.getElementById("hint");
   if(e.hint){hint.style.display="block";hint.textContent=e.hint;}else hint.style.display="none";
@@ -643,7 +932,8 @@ function showEvent(){
 function pick(i){
   const e=state.current, c=e.choices[i];
   const before={...publicState};
-  effect(c.effects);
+  const appliedEffects=choiceEffects(e,c);
+  effect(appliedEffects);
   [...document.querySelectorAll(".choice")].forEach((b,idx)=>{b.disabled=true;if(idx===i){b.style.borderColor="#7c8cff";b.style.background="#242c49";}});
   const deltas=[];
   for(const k of ["performance","mood","fatigue"]){
@@ -652,16 +942,17 @@ function pick(i){
   }
   state.history.push({
     id:e.id,week:e.week,title:e.title,who:e.who,choice:c.text,reaction:c.reaction,
-    effects:c.effects,quality:c.meta?.quality??0,topic:c.meta?.topic||"의사결정"
+    effects:appliedEffects,quality:c.meta?.quality??0,topic:c.meta?.topic||"의사결정"
   });
-  if(c.meta?.follow && followups[c.meta.follow]){
-    const fw=Math.min(11,e.week+Math.floor(Math.random()*3)+1);
+  if(c.meta?.follow && followups[c.meta.follow] && state.followupCount<2){
+    const fw=Math.min(12,e.week+Math.floor(Math.random()*2)+1);
     const f={...clone(followups[c.meta.follow]),week:fw};
-    // prevent duplicate
+    // 한 플레이에서 후속 사건은 최대 2개, 같은 사건은 중복 금지.
     if(!state.schedule.some(x=>x.id===f.id)){
       let insertAt=state.schedule.findIndex((x,idx)=>idx>state.eventIndex && x.week>fw);
       if(insertAt<0) insertAt=state.schedule.length;
       state.schedule.splice(insertAt,0,f);
+      state.followupCount++;
     }
   }
   document.getElementById("reactionTitle").textContent="그날의 반응";
@@ -689,22 +980,43 @@ function grade(v, invert=false){
   const x=invert?100-v:v;
   if(x>=80)return"A"; if(x>=68)return"B+"; if(x>=55)return"B"; if(x>=42)return"C"; return"D";
 }
+function sustainabilityScore(){
+  const people=(hidden.autonomy + hidden.safety + hidden.trust + hidden.growth) / 4;
+  const fatiguePenalty=Math.max(0,publicState.fatigue-45)*0.55;
+  const overworkPenalty=Math.max(0,hidden.overwork)*0.8;
+  return clamp(Math.round(people-fatiguePenalty-overworkPenalty));
+}
+function performanceNarrative(){
+  const p=publicState.performance, band=performanceBand(p).name;
+  if(p>=80) return `90일 동안 팀은 기대 이상의 결과를 만들었습니다. 다만 높은 성과가 팀의 자율적인 실행에서 나온 것인지, 팀장의 직접 개입과 과로에서 나온 것인지는 지속가능성 점수와 함께 봐야 합니다.`;
+  if(p>=68) return `핵심 목표는 달성권에 들어왔습니다. 결과를 만든 방식이 다음 분기에도 반복 가능한지, 특정 개인이나 팀장에게 과도하게 의존하지 않았는지가 다음 평가 포인트입니다.`;
+  if(p>=55) return `목표 달성 가능성은 남겼지만 여유 있는 성과는 아니었습니다. 좋은 팀 운영이 실제 우선순위와 실행 속도로 연결됐는지 돌아볼 필요가 있습니다.`;
+  if(p>=45) return `팀 운영에서 의미 있는 기반을 만들었더라도 결과 측면에서는 주의가 필요합니다. 팀장은 사람과 과정뿐 아니라 목표 달성의 책임에서도 벗어날 수 없습니다.`;
+  return `90일 동안 핵심 결과가 충분히 나오지 않았습니다. 좋은 의도나 팀 분위기만으로는 팀장의 책임이 완성되지 않습니다. 목표, 우선순위, 실행 속도와 지원 요청을 더 일찍 다뤘어야 했습니다.`;
+}
 function deriveEnding(){
   const autonomy=hidden.autonomy, safety=hidden.safety, trust=hidden.trust, fatigue=publicState.fatigue, perf=publicState.performance;
+  const sustain=sustainabilityScore();
   const domination=hidden.control + hidden.rescue;
-  if(perf>=68 && autonomy>=65 && safety>=60 && trust>=60 && fatigue<70)
-    return {name:"당신이 없어도 움직이는 팀", tone:"GOOD END", desc:"90일 동안 당신은 모든 문제를 직접 해결하지 않았습니다. 대신 판단 기준과 책임의 경계를 만들고, 팀원이 스스로 움직일 여지를 남겼습니다. 마지막 주 당신이 자리를 비운 동안에도 팀은 대부분의 결정을 스스로 처리했습니다."};
+  if(perf>=68 && sustain>=65 && autonomy>=60 && safety>=58 && trust>=58 && fatigue<72)
+    return {name:"당신이 없어도 성과를 내는 팀", tone:"GOOD END", desc:"90일 동안 팀은 결과를 만들었고, 그 결과가 팀장 한 사람에게만 의존하지도 않았습니다. 판단 기준과 책임의 경계가 남았고, 마지막 주 당신이 자리를 비운 동안에도 팀은 대부분의 결정을 스스로 처리했습니다."};
+  if(perf>=78 && sustain<50)
+    return {name:"숫자는 남았다", tone:"MIXED END · 성과 우선형", desc:"목표 수치는 훌륭했습니다. 그러나 높은 성과를 위해 팀장 개입, 과로, 통제가 누적됐습니다. 이번 분기는 이겼지만 같은 방식으로 다음 분기까지 달릴 수 있는지는 불확실합니다."};
+  if(perf<45 && sustain>=60)
+    return {name:"좋은 팀, 부족한 결과", tone:"MIXED END · 관계 우선형", desc:"팀원들은 비교적 안전하게 의견을 내고 스스로 움직일 기반을 얻었습니다. 하지만 90일의 핵심 목표는 충분히 달성하지 못했습니다. 좋은 환경을 만드는 것과 결과를 만드는 운영력을 연결하는 것이 다음 과제입니다."};
+  if(perf<42)
+    return {name:"과정은 있었지만 결과가 없었다", tone:"BAD END · 성과 미달", desc:"팀 운영에 신경 썼지만 핵심 목표를 놓쳤습니다. 팀장은 사람을 보호하는 동시에 무엇을 버리고 무엇에 집중할지 결정해 결과를 만들어야 합니다. 성과 책임을 뒤로 미룬 대가가 마지막에 드러났습니다."};
   if(domination>=18 && autonomy<48)
     return {name:"당신이 없으면 멈추는 팀", tone:"BAD END · 의존형 조직", desc:"성과를 지키기 위해 자주 직접 개입하고 확인했습니다. 당장은 안전했지만 결정이 점점 당신에게 모였습니다. 마지막에는 팀원들이 문제보다 ‘팀장 승인’을 먼저 찾는 조직이 되었습니다."};
   if(fatigue>=72 || hidden.overwork>=12)
-    return {name:"영웅은 남았고 팀장은 지쳤다", tone:"BAD END · 영웅형 팀장", desc:"중요한 순간마다 당신이 빈틈을 메웠고 결과도 상당 부분 지켜냈습니다. 하지만 팀의 지속가능성보다 개인의 희생이 앞섰습니다. 이 방식은 한두 번은 통하지만 90일 이후에도 계속되기 어렵습니다."};
+    return {name:"영웅은 남았고 팀장은 지쳤다", tone:"BAD END · 영웅형 팀장", desc:"중요한 순간마다 당신이 빈틈을 메웠고 결과도 상당 부분 지켜냈습니다. 하지만 팀의 지속가능성보다 개인의 희생이 앞섰습니다. 성과는 팀장이 계속 버텨야만 유지되는 구조가 되었습니다."};
   if(safety<42)
-    return {name:"문제 없습니다", tone:"BAD END · 침묵하는 팀", desc:"표면적으로 큰 충돌은 적었습니다. 그러나 나쁜 소식과 반대 의견이 위로 올라오는 빈도가 줄었습니다. 문제가 없었던 것이 아니라, 말하기 어려운 팀이 되었을 가능성이 큽니다."};
+    return {name:"문제 없습니다", tone:"BAD END · 침묵하는 팀", desc:"표면적으로 큰 충돌은 적었습니다. 그러나 나쁜 소식과 반대 의견이 위로 올라오는 빈도가 줄었습니다. 숫자가 당장 괜찮더라도 위험이 늦게 발견되는 팀은 장기적인 성과를 지키기 어렵습니다."};
   if(hidden.avoid>=10)
-    return {name:"좋은 사람이었지만 어려운 말은 늦었다", tone:"BAD END · 갈등 회피형", desc:"관계를 해치지 않으려는 선택이 많았습니다. 팀 분위기를 보호한 순간도 있었지만, 필요한 피드백과 결정이 뒤로 밀리면서 같은 문제가 반복됐습니다."};
-  if(perf<48)
-    return {name:"좋은 의도, 흐릿한 결과", tone:"MIXED END", desc:"사람을 배려하고 기회를 주려 했지만 목표와 기준을 충분히 선명하게 만들지 못한 순간이 있었습니다. 자율성은 방향과 함께 주어질 때 더 강하게 작동합니다."};
-  return {name:"괜찮은 팀, 아직 만들어지는 팀장", tone:"NORMAL END", desc:"90일 동안 여러 상황에서 균형을 잡았습니다. 분명 잘한 판단도 있었고, 압박이 커질수록 익숙한 방식으로 돌아간 순간도 있었습니다. 다음 90일은 ‘어떤 상황에서 내가 개입하는가’를 더 의식하면 좋아질 수 있습니다."};
+    return {name:"좋은 사람이었지만 어려운 말은 늦었다", tone:"BAD END · 갈등 회피형", desc:"관계를 해치지 않으려는 선택이 많았습니다. 팀 분위기를 보호한 순간도 있었지만, 필요한 피드백과 결정이 뒤로 밀리면서 문제 해결과 성과 모두에 비용이 생겼습니다."};
+  if(perf<52)
+    return {name:"좋은 의도, 흐릿한 결과", tone:"MIXED END", desc:"사람을 배려하고 기회를 주려 했지만 목표와 기준을 충분히 선명하게 만들지 못한 순간이 있었습니다. 자율성은 방향과 성과 책임이 함께 있을 때 더 강하게 작동합니다."};
+  return {name:"괜찮은 팀, 아직 만들어지는 팀장", tone:"NORMAL END", desc:"90일 동안 사람과 결과 사이에서 여러 번 균형을 잡았습니다. 성과도 일정 수준 만들었지만, 압박이 커질수록 익숙한 방식으로 돌아간 순간도 있었습니다. 다음 90일에는 ‘어떤 결과를 위해 언제 개입할지’를 더 선명하게 정해보세요."};
 }
 function pctTrait(v,min=0,max=20){ return Math.round(clamp((v-min)/(max-min)*100));}
 function traitData(){
@@ -753,6 +1065,7 @@ function feedbackFor(h){
     "상향 커뮤니케이션":"윗선의 요청을 그대로 아래로 전달하기보다 현재 상황·영향·선택지·요청사항을 함께 올리면 팀을 보호하면서도 조직 결정을 돕습니다.",
     "성장":"자율성을 주되 결정 범위와 체크 지점을 함께 정해야 합니다. ‘알아서 해’는 위임이 아니라 방임이 될 수 있습니다.",
     "성과 압박":"일정·범위·품질을 동시에 지키기 어렵다면 트레이드오프를 숨기지 말고 의사결정권자에게 영향과 선택지를 명확히 올리는 편이 좋습니다.",
+    "중간 성과 리뷰":"팀장은 좋은 관계만 만드는 자리가 아니라 팀의 결과까지 책임지는 자리입니다. 성과가 부족할 때 직접 메우는 것, 우선순위를 바꾸는 것, 지원을 요청하는 것은 서로 다른 비용을 만듭니다.",
     "최종 위임":"좋은 팀의 신호는 팀장이 없어도 판단이 멈추지 않는 것입니다. 다만 자율성은 기준과 경계가 있어야 작동합니다.",
     "반복 실수":"이미 코칭한 반복 실수에는 더 직접적인 책임 피드백이 필요할 수 있습니다. 단호함 자체보다 ‘무엇이 반복됐고 어떤 약속이 지켜지지 않았는지’를 구체적으로 말하는 것이 중요합니다.",
     "완벽주의":"리더가 80점을 100점으로 직접 만드는 순간, 팀원은 80점에서 100점으로 가는 방법을 배울 기회를 잃을 수 있습니다.",
@@ -762,14 +1075,49 @@ function feedbackFor(h){
     "칭찬":"‘잘했다’보다 어떤 행동이 어떤 좋은 결과를 만들었는지 구체적으로 말하면 팀이 재현할 기준을 얻습니다.",
     "구원자":"팀장이 빨리 풀 수 있다는 이유로 대신 해결하면 당장 빠르지만 팀원의 문제 해결 기회를 가져갈 수 있습니다.",
     "아이디어 샘":"리더의 아이디어는 권한 때문에 단순한 ‘제안’으로 들리지 않을 수 있습니다. 지금 해야 하는 일인지, 아이디어일 뿐인지 구분해주는 게 중요합니다.",
-    "하향 커뮤니케이션":"결론만 전달하면 통제처럼 느껴질 수 있습니다. 배경과 이유를 함께 전달해야 팀이 회사 결정을 자기 일과 연결할 수 있습니다."
+    "하향 커뮤니케이션":"결론만 전달하면 통제처럼 느껴질 수 있습니다. 배경과 이유를 함께 전달해야 팀이 회사 결정을 자기 일과 연결할 수 있습니다.",
+    "성과와 태도":"높은 성과는 무례한 행동의 면허가 아니지만, 불편한 태도를 고치겠다고 좋은 의견까지 막아서는 안 됩니다. 내용의 가치와 사람에게 미치는 행동의 영향을 분리해 피드백해보세요.",
+    "성과 부진 코칭":"노력은 인정할 수 있지만 성과 기준을 흐리면 본인도 팀도 더 오래 힘들어집니다. 기대 수준과 기간, 지원 방식, 다음 판단 시점을 구체적으로 합의하는 편이 좋습니다.",
+    "고성과자 관리":"고성과자의 행동은 팀 전체의 규범이 되기 쉽습니다. 결과를 인정하면서도 다른 사람이 말하고 배우는 기회를 줄이는 행동에는 분명한 경계를 세워야 합니다.",
+    "공개 반박":"팀장의 권위를 지키는 것과 반대 의견을 막는 것은 다릅니다. 근거 있는 이견이 공개적으로 다뤄질 수 있어야 잘못된 결정을 더 빨리 수정할 수 있습니다.",
+    "갈등 중재":"사과를 시키거나 사람을 떨어뜨려 놓는 것만으로 갈등의 원인이 사라지지는 않습니다. 각자의 사실 인식과 업무상 필요한 합의를 분리해 다뤄보세요.",
+    "공정성":"공정성은 모두를 똑같이 대하는 것만이 아니라 기여, 발언 기회, 판단 기준이 납득 가능하게 보이는 상태에 가깝습니다.",
+    "승진/커리어":"위로를 위해 보장할 수 없는 약속을 하지 마세요. 감정을 듣고, 결정 구조와 다음 단계 기준, 내가 실제로 지원할 수 있는 범위를 나누는 편이 신뢰를 지킵니다.",
+    "감정적 피드백":"상대가 감정적으로 반응했다고 필요한 피드백이 사라지는 것은 아닙니다. 감정을 다룰 시간을 주되 행동과 기대 수준은 구체적으로 남기는 편이 좋습니다.",
+    "퇴사 고민":"이직 고민을 들으면 바로 붙잡거나 보고하기 전에 원인을 이해할 필요가 있습니다. 아직 결정되지 않은 이야기를 다룰 때는 신뢰와 정보 공유 범위도 중요합니다.",
+    "사생활 경계":"팀장은 개인 사정의 상세 내용을 알 권리가 있는 사람이 아닙니다. 업무에 필요한 조정과 기준을 묻되 설명하고 싶지 않은 영역은 존중하는 편이 좋습니다.",
+    "팀장 실수":"팀장이 공개적으로 만든 오해는 공개적으로 바로잡는 것이 팀의 안전감을 높일 수 있습니다. 책임 인정은 권위를 약하게 하기보다 이견을 말할 수 있는 기준을 만듭니다.",
+    "팀 문화":"농담이나 친근함도 듣는 사람에게는 압박이 될 수 있습니다. 의도보다 반복되는 행동과 실제 영향을 기준으로 보세요.",
+    "개인차 관리":"조용함, 사교성, 회의 발언량 자체를 성과나 몰입과 동일시하지 마세요. 협업에 필요한 행동과 개인의 일하는 스타일을 구분하는 편이 좋습니다.",
+    "숨은 과부하":"한 사람이 계속 다른 사람의 일을 조용히 메우면 팀 성과가 좋아 보이는 동안 구조적 문제가 숨겨집니다. 재작업량과 책임 경계를 드러내야 합니다.",
+    "공정성과 사생활":"예외를 허용할지보다 어떤 업무 기준으로 판단할지를 먼저 정하면 개인 사정을 캐묻지 않고도 일관된 결정을 할 수 있습니다.",
+    "포용과 정보":"친분 자체를 통제할 필요는 없지만 중요한 업무 정보와 결정이 비공식 관계에서만 흐르면 팀의 기회와 성과가 달라집니다. 공식 정보 경로를 분명히 하세요."
   };
   return map[t] || "이 선택의 장점과 비용을 함께 보세요. 단기 성과만이 아니라 팀원의 다음 행동이 어떻게 바뀌는지가 리더십의 결과입니다.";
 }
+function performanceDecisions(){
+  return [...state.history]
+    .filter(h=>h.effects && typeof h.effects.performance==="number" && h.effects.performance!==0)
+    .sort((a,b)=>Math.abs(b.effects.performance)-Math.abs(a.effects.performance))
+    .slice(0,4);
+}
+function performanceDecisionHtml(h){
+  const d=h.effects.performance||0;
+  const direction=d>0?"▲ 단기 성과에 도움":"▼ 단기 성과에 부담";
+  return `<div class="analysis-item">
+    <h4><span class="${d>0?"tag-good":"tag-warn"}">${direction}</span>Week ${h.week} · ${escapeHtml(h.title)}</h4>
+    <div class="picked"><b>당신의 선택</b><br>“${escapeHtml(h.choice)}”</div>
+    <div class="feedback">이 결정은 당시 팀 성과에 <b>${d>0?"긍정적":"부정적"}</b>인 단기 영향을 줬습니다. 하지만 성과 숫자만으로 좋은 판단을 확정할 수는 없습니다.<br><br>${escapeHtml(feedbackFor(h))}</div>
+  </div>`;
+}
+
 function finishGame(){
   state.finished=true;
   document.getElementById("game").style.display="none";
   const end=deriveEnding(), an=selectAnalysis();
+  const sustain=sustainabilityScore();
+  const pBand=performanceBand();
+  const perfDecisions=performanceDecisions();
   const traitHtml=traitData().map(([n,p])=>`<div class="trait"><div class="trait-top"><span>${n}</span><b>${p}%</b></div><div class="mini"><div style="width:${p}%"></div></div></div>`).join("");
   const goodHtml=an.best.length?an.best.map(h=>analysisHtml(h,true)).join(""):`<div class="analysis-item"><p class="picked">뚜렷하게 높은 평가를 받은 선택은 적었습니다. 다음 플레이에서 ‘팀원이 다음에 더 잘할 수 있게 하는가’를 기준으로 판단해보세요.</p></div>`;
   const weakHtml=an.weak.length?an.weak.map(h=>analysisHtml(h,false)).join(""):`<div class="analysis-item"><p class="picked">큰 경고 신호가 적었습니다. 다만 숫자가 좋더라도 팀원 의존도와 피로 누적은 함께 확인해보세요.</p></div>`;
@@ -780,11 +1128,28 @@ function finishGame(){
       <h2>엔딩 — 「${end.name}」</h2>
       <p class="lead">${end.desc}</p>
       <div class="grades">
-        <div class="grade"><b>팀 성과</b><strong>${grade(publicState.performance)}</strong><span>${label(publicState.performance)}</span></div>
+        <div class="grade"><b>사업 성과</b><strong>${grade(publicState.performance)}</strong><span>${pBand.name}</span></div>
+        <div class="grade"><b>팀 지속가능성</b><strong>${grade(sustain)}</strong><span>${label(sustain)}</span></div>
         <div class="grade"><b>팀 자율성</b><strong>${grade(hidden.autonomy)}</strong><span>${label(hidden.autonomy)}</span></div>
         <div class="grade"><b>심리적 안전감</b><strong>${grade(hidden.safety)}</strong><span>${label(hidden.safety)}</span></div>
       </div>
     </div>
+
+    <div class="panel ending-card">
+      <span class="ending-badge">PERFORMANCE REVIEW</span>
+      <h2 style="font-size:24px">90일 성과 평가 — ${pBand.name}</h2>
+      <p class="lead">${performanceNarrative()}</p>
+      <div class="analysis-item">
+        <h4>성과는 결과와 방식으로 함께 봅니다</h4>
+        <div class="feedback">성과가 높더라도 팀장의 과로와 통제로 만든 결과라면 다음 분기 지속가능성이 낮습니다. 반대로 팀 분위기와 자율성이 좋아도 핵심 목표를 놓쳤다면 좋은 팀장 평가를 받을 수 없습니다. 이번 평가는 두 축을 함께 봅니다.</div>
+      </div>
+    </div>
+
+    ${perfDecisions.length?`<div class="panel ending-card">
+      <span class="ending-badge">PERFORMANCE DECISIONS</span>
+      <h2 style="font-size:24px">성과를 크게 움직인 결정</h2>
+      ${perfDecisions.map(performanceDecisionHtml).join("")}
+    </div>`:""}
 
     <div class="panel ending-card">
       <span class="ending-badge">LEADERSHIP PROFILE</span>
@@ -851,7 +1216,8 @@ function copyReport(){
   const txt=`신임 팀장 90일 결과
 엔딩: ${end.name}
 리더 유형: ${typeName()}
-팀 성과: ${grade(publicState.performance)}
+사업 성과: ${grade(publicState.performance)} (${performanceBand().name})
+팀 지속가능성: ${grade(sustainabilityScore())}
 팀 자율성: ${grade(hidden.autonomy)}
 심리적 안전감: ${grade(hidden.safety)}
 다음 과제: ${nextChallenge()}`;
